@@ -4,8 +4,8 @@ const bcrypt = require("bcrypt");
 const db = require("../connection");
 const {sign} = require("jsonwebtoken");
 
-
-router.post("/", (req, res) => {
+// サインアップ処理
+router.post("/signup", (req, res) => {
   const {username, password} = req.body;
   const sqlSelect = `SELECT * FROM Users WHERE username='${username}'`;
   db.getConnection((err, connection) => {
@@ -13,7 +13,7 @@ router.post("/", (req, res) => {
       if (result_s.length === 0) {
         const sqlInsert = "INSERT INTO Users (username, password) VALUES (?, ?)";
         bcrypt.hash(password, 10).then((hash) => {
-          db.query(sqlInsert, [username, hash], (err_i, result_i) => {
+          connection.query(sqlInsert, [username, hash], (err_i, result_i) => {
             if(err_i) console.log(err_i);
           });
         });
@@ -26,11 +26,12 @@ router.post("/", (req, res) => {
   });
 });
 
+// ログイン処理
 router.post("/login", (req, res) => {
   const {username, password} = req.body;
-  const user = `SELECT * FROM Users WHERE username='${username}'`;
+  const sqlSelect = `SELECT * FROM Users WHERE username='${username}'`;
   db.getConnection((err, connection) => {
-    connection.query(user, (err, result) => {
+    connection.query(sqlSelect, (err, result) => {
       if(result.length !==0) {
         bcrypt.compare(password, result[0].password).then((match) => {
           if (!match) {
@@ -50,6 +51,5 @@ router.post("/login", (req, res) => {
     });
   });
 });
-
 
 module.exports = router;
