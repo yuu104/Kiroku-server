@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../connection");
 const {validateToken} = require("../middlewares/AuthMiddleware");
 
+// 登録したアクション一覧を取得
 router.get("/", validateToken, (req, res) => {
   const userId = req.user.id;
   const sqlSelect = `SELECT * FROM ActionItem WHERE user_id='${userId}'`
@@ -14,7 +15,8 @@ router.get("/", validateToken, (req, res) => {
   });
 });
 
-router.get("/edit/:id", (req, res) => {
+// 指定したアクションを取得
+router.get("/:id", (req, res) => {
   const id = req.params.id;
   const sqlSelect = `SELECT * FROM ActionItem WHERE id=${id}`
   db.getConnection((err, connection) => {
@@ -25,7 +27,8 @@ router.get("/edit/:id", (req, res) => {
   });
 });
 
-router.post("/add", validateToken , (req, res) => {
+// 新規アクション追加
+router.post("/", validateToken , (req, res) => {
   const name = req.body.item_name;
   const color = req.body.color;
   const userId = req.user.id;
@@ -38,7 +41,8 @@ router.post("/add", validateToken , (req, res) => {
   });
 });
 
-router.post("/update", (req, res) => {
+// アクションを編集
+router.put("/", (req, res) => {
   const id = req.body.id;
   const name = req.body.item_name;
   const color = req.body.color;
@@ -51,7 +55,8 @@ router.post("/update", (req, res) => {
   });
 });
 
-router.delete("/delete", (req, res) => {
+// アクションを削除
+router.delete("/", (req, res) => {
   const id = req.body.id;
   const sqlDelete = "DELETE FROM ActionItem WHERE id=?";
   db.getConnection((err, connection) => {
