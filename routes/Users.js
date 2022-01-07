@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const db = require("../connection");
 const {sign} = require("jsonwebtoken");
 
+const secret = process.env.JWT_KEY;
+
 // サインアップ処理
 router.post("/signup", (req, res) => {
   const {username, password} = req.body;
@@ -39,7 +41,7 @@ router.post("/login", (req, res) => {
           } else {
             const accessToken = sign(
               {username: result[0].username, id: result[0].id},
-              "importantsecret",
+              secret,
             );
             res.json({auth: true, token: accessToken});
           }
